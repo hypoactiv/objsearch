@@ -26,7 +26,10 @@ type ColorMode int
 type CombineMode int
 
 const (
-	COLORMODE_GRAY = iota // convert field and image to grayscale before searching
+	// convert field and image to grayscale before searching
+	COLORMODE_GRAY = iota
+	// compare RGB channels separately and combine results according to CombineMode
+	COLORMODE_RGB
 
 	COMBINEMODE_MAX // combine results by taking the per-pixel maximum over all channels
 )
@@ -42,6 +45,7 @@ func Search(field, object *image.RGBA, rect image.Rectangle, tolerance float64, 
 		SearchRect: rect,
 		Tolerance:  tolerance,
 		VerboseOut: verboseOut,
+		MinDist:    minDist,
 	}
 	// create intermediate field and object images
 	interField, interObject := []*image.Gray{}, []*image.Gray{}
@@ -50,6 +54,9 @@ func Search(field, object *image.RGBA, rect image.Rectangle, tolerance float64, 
 		// generate grayscale intermediate images
 		interField = append(interField, imutil.ToGrayscale(field))
 		interObject = append(interObject, imutil.ToGrayscale(object))
+	case COLORMODE_RGB:
+		interField = imutil.SeparateRGB(field)
+		interObject = imutil.SeparateRGB(object)
 	default:
 		panic("invalid color mode")
 	}

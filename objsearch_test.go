@@ -43,7 +43,7 @@ func randomGrayImage(w, h int) (r *image.Gray) {
 }
 
 func randomRGBImage(w, h int) (r *image.RGBA) {
-	return imutil.ToRGB(
+	return imutil.CombineRGB(
 		randomGrayImage(w, h),
 		randomGrayImage(w, h),
 		randomGrayImage(w, h),
